@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/yourusername/jobpilot-ai/main/frontend/public/logo.png" alt="JobPilot AI" width="80" height="80">
-
 # JobPilot AI ✈️
 
 **AI-Powered Intelligent Job Discovery Platform**
