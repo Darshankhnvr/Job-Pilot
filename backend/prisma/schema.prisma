@@ -1,0 +1,76 @@
+// This is your Prisma schema file.
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  searchHistory SearchHistory[]
+  savedJobs     SavedJob[]
+}
+
+model Job {
+  id             String    @id @default(uuid())
+  title          String
+  company        String
+  location       String
+  description    String    @db.Text
+  salaryMin      Int?
+  salaryMax      Int?
+  experience     String?
+  employmentType String?
+  skills         Json      @default("[]")
+  source         String
+  jobUrl         String    @db.Text
+  normalizedUrl  String    @unique
+  postedAt       DateTime?
+  firstSeenAt    DateTime  @default(now())
+  lastVerifiedAt DateTime  @default(now())
+  status         String    @default("active")
+
+  savedBy SavedJob[]
+
+  @@index([title])
+  @@index([company])
+  @@index([location])
+  @@index([source])
+  @@index([status])
+  @@index([lastVerifiedAt])
+}
+
+model SearchHistory {
+  id            String   @id @default(uuid())
+  userId        String
+  searchQuery   String   @db.Text
+  searchFilters Json
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model SavedJob {
+  id        String   @id @default(uuid())
+  userId    String
+  jobId     String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+}
